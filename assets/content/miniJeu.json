@@ -1,0 +1,14 @@
+{
+  "minijeu": [
+    "Tout le monde doit faire un compliment à son voisin de gauche (un vrai !). Si tu trouves que ton compliment est nul, bois 2 gorgées.",
+    "Faites passer une carte à votre voisin de droite en utilisant seulement votre bouche, tout le monde doit avoir reçu et donné la carte. 1 gorgée pour ceux qui ratent.",
+    "Tout le monde devra faire ‘le petit bonhomme’ avant de boire. 1 gorgée pour ceux qui oublient.",
+    "Tout le monde joue au jeu du Clap. \n\n Tout le monde tape dans ses mains à tour de rôle dans le sens horaire. Si quelqu’un tape 2 fois, le sens change. %s commence. 2 gorgées pour celui qui perd.",
+    "Tout le monde joue à ‘Dans ma valise’. %s commence. Celui qui perd boit 2 gorgées.",
+    "Tout le monde est soumis au jeu du Buffalo et doit donc boire de sa mauvaise main. 1 gorgée par oubli.",
+    "Tout le monde joue au jeu du Thème. \n\n La dernière personne à avoir joué choisit un thème et tout le monde donne à tour de rôle un mot en rapport avec ce thème. Celui qui n’a plus de mot ou répète un mot déjà dit boit 2 gorgées.",
+    "Tout le monde joue au jeu du 33. \n\n Vous devez arriver à 33 en ajoutant à tour de rôle 1, 2 ou 3 au chiffre précédent. Vous ne pouvez pas dire le même chiffre que la personne avant vous. Celui sur qui le 33 arrive boit 2 gorgées.",
+    "Tout le monde joue au jeu du Zim Zam Zoum. Au bout de 3, chacun lève ou baisse son bras. Ceux qui sont en majorité boivent.",
+    "Tout le monde joue au jeu du regard. Au bout de 3, chacun regarde une personne dans les yeux. Ceux qui se regardent mutuellement boivent."
+  ]
+}

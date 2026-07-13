@@ -1,0 +1,13 @@
+{
+  "duel": [
+    "%s et %2$s ont 1 minute pour ramener un objet. L’objet déclaré le plus drôle par l’assemblée gagne. Le perdant rajoute de l’alcool dans son verre.",
+    "%s et %3$s font un bras de fer, le perdant boit un shot",
+    "%s et %2$s font une bataille de regard, le perdant doit garder les yeux fermés jusqu’à son prochain tour",
+    "%s et %2$s font un Dos à dos",
+    "%s et %2$s sont en couple jusqu’à ce que leurs deux tours soient revenus : dès que l’un boit, l’autre doit le suivre.",
+    "Un des joueurs sert un shot d’eau et un autre d’alcool transparent et les dispose à la vue de tous. %s et %s choisissent chacun un verre et le cul sec en même temps.",
+    "%s et %2$s font un cul sec croisé.",
+    "%s et %2$s font un chifouflingue. \n (Si personne ne connait faites un chifoumi classique)",
+    "%s et %2$s font un concours d'anecdote. Chacun raconte une histoire, le but est de deviner si l'anecdote de l'autre est vraie ou fausse."
+  ]
+}

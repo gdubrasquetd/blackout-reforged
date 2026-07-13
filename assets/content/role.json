@@ -1,0 +1,11 @@
+{
+  "role": [
+    "Roi des pouces : \n %s devient le Roi des pouces ! À chaque fois que le Roi pose son pouce sur un objet, tout le monde doit le suivre. Le plus lent boit une gorgée.",
+    "Maître du temps :\n %s devient Maître du temps ! À chaque fois que le Maître du temps crie 'Freeze' tout le monde s'arrête de bouger. Celui qui obéit le dernier boit une gorgée.",
+    "Maître des questions : \n %s devient Maître des questions ! Si quelqu'un répond à n'importe quelle question du Maître, la personne boit une gorgée. Si la personne répond ‘Ta gueule’ c’est le Maître qui boit !",
+    "Roi des miroirs : \n %s devient le Roi des miroirs ! Le Roi a le droit de demander à n'importe qui de faire l’action ou de répondre à la vérité en cours.",
+    "Médusa : \n %s devient Médusa ! À chaque fois qu'une personne regarde le Duc dans les yeux, elle boit une gorgée.",
+    "Altesse : \n %s devient l’Altesse ! À chaque fois qu'une personne s’adresse à l'Altesse, elle doit finir sa phrase par “Votre Altesse”. En cas d’oubli, la personne devra boire une gorgée.",
+    "Cupidon : \n %s devient Cupidon ! Ce dernier doit désigner 2 personnes qui forment alors un couple. Dès que l’un des membres du couple boit, l’autre doit également boire."
+  ]
+}

@@ -1,0 +1,132 @@
+workflows:
+  # ---------------------------------------------------------------------
+  # ios-simulator-preview
+  # ---------------------------------------------------------------------
+  # No Apple Developer account and no code signing required. This builds
+  # BlackOut for the iOS Simulator on one of Codemagic's Mac machines,
+  # boots a simulated iPhone, installs and launches the app, and saves
+  # screenshots as a downloadable artifact -- enough to actually SEE the
+  # app running on iOS without owning a Mac.
+  #
+  # Setup (one-time, in the Codemagic dashboard, no code changes needed):
+  #   1. Create a free account at codemagic.io.
+  #   2. "Add application" -> connect this repository (or upload it).
+  #   3. Codemagic auto-detects this codemagic.yaml. Start the
+  #      "ios-simulator-preview" workflow.
+  #   4. When it finishes, download the "screenshots" artifact.
+  ios-simulator-preview:
+    name: iOS - Simulator preview (no signing required)
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.5
+      xcode: latest
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+
+      - name: Run the test suite
+        script: flutter test
+
+      - name: Build for the iOS Simulator (unsigned)
+        script: flutter build ios --simulator --release
+
+      - name: Boot a simulator, install and launch the app
+        script: |
+          set -e
+          DEVICE_NAME="iPhone 15"
+          BUNDLE_ID="fr.guillaume.blackout"
+          APP_PATH="build/ios/iphonesimulator/Runner.app"
+
+          xcrun simctl bootstatus "$DEVICE_NAME" -b || xcrun simctl boot "$DEVICE_NAME"
+          xcrun simctl install booted "$APP_PATH"
+          xcrun simctl launch booted "$BUNDLE_ID"
+          # Give the app a moment to finish its first frame before capturing.
+          sleep 5
+
+      - name: Capture screenshots
+        script: |
+          mkdir -p screenshots
+          xcrun simctl io booted screenshot screenshots/01_launch.png
+          # Add more `sleep` + `xcrun simctl io booted screenshot ...` pairs
+          # here if you want to script taps (via `xcrun simctl ... spawn`)
+          # and capture further screens.
+
+    artifacts:
+      - screenshots/*.png
+      - build/ios/iphonesimulator/*.app
+
+  # ---------------------------------------------------------------------
+  # ios-release (signed build for a real device / TestFlight / App Store)
+  # ---------------------------------------------------------------------
+  # Needs an Apple Developer Program membership (99 USD/year) -- there is
+  # no way around that for a build that installs on a physical iPhone or
+  # ships to TestFlight/the App Store. Nothing below is usable until you:
+  #
+  #   1. Enrol in the Apple Developer Program.
+  #   2. In Codemagic: Team settings -> Code signing identities ->
+  #      connect your Apple Developer account (App Store Connect API key).
+  #   3. In Codemagic: Team settings -> Environment variable groups ->
+  #      create a group named "appstore_credentials" holding:
+  #        - APP_STORE_CONNECT_ISSUER_ID
+  #        - APP_STORE_CONNECT_KEY_IDENTIFIER
+  #        - APP_STORE_CONNECT_PRIVATE_KEY
+  #      (Codemagic's UI generates/collects these for you -- never commit
+  #      them to this file or to git.)
+  #   4. Uncomment this workflow.
+  #
+  # ios-release:
+  #   name: iOS - Signed release build
+  #   max_build_duration: 60
+  #   instance_type: mac_mini_m2
+  #   integrations:
+  #     app_store_connect: appstore_credentials
+  #   environment:
+  #     flutter: 3.32.5
+  #     xcode: latest
+  #     ios_signing:
+  #       distribution_type: app_store
+  #       bundle_identifier: fr.guillaume.blackout
+  #   scripts:
+  #     - name: Get Flutter packages
+  #       script: flutter pub get
+  #     - name: Run the test suite
+  #       script: flutter test
+  #     - name: Set up code signing
+  #       script: keychain initialize && app-store-connect fetch-signing-files fr.guillaume.blackout --type IOS_APP_STORE --create
+  #     - name: Build signed .ipa
+  #       script: |
+  #         flutter build ipa --release \
+  #           --export-options-plist=/Users/builder/export_options.plist
+  #   artifacts:
+  #     - build/ios/ipa/*.ipa
+  #   publishing:
+  #     app_store_connect:
+  #       auth: integration
+  #       submit_to_testflight: true
+
+  # ---------------------------------------------------------------------
+  # android-release (optional -- Android already builds fine locally, but
+  # having it in CI too keeps both platforms in one place)
+  # ---------------------------------------------------------------------
+  # To enable a properly signed build here (not the debug-signed fallback):
+  #   1. In Codemagic: Team settings -> Code signing identities -> Android
+  #      keystores -> upload your .jks and note the reference name.
+  #   2. Reference it under `android_signing:` below.
+  android-release:
+    name: Android - Release APK
+    max_build_duration: 30
+    instance_type: linux_x2
+    environment:
+      flutter: 3.32.5
+      # android_signing:
+      #   - blackout_upload_keystore
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Run the test suite
+        script: flutter test
+      - name: Build release APK
+        script: flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
