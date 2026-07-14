@@ -34,23 +34,34 @@ workflows:
       - name: Boot a simulator, install and launch the app
         script: |
           set -e
-          DEVICE_NAME="iPhone 15"
           BUNDLE_ID="fr.guillaume.blackout"
           APP_PATH="build/ios/iphonesimulator/Runner.app"
 
-          xcrun simctl bootstatus "$DEVICE_NAME" -b || xcrun simctl boot "$DEVICE_NAME"
-          xcrun simctl install booted "$APP_PATH"
-          xcrun simctl launch booted "$BUNDLE_ID"
+          # Pick whichever iPhone simulator is actually available on this
+          # build machine instead of hardcoding a model name -- the set of
+          # pre-created simulators depends on the Xcode version Codemagic
+          # assigns, and a hardcoded name (e.g. "iPhone 15") silently fails
+          # to boot if that exact model isn't provisioned.
+          DEVICE_ID=$(xcrun simctl list devices available -j \
+            | jq -r '[.devices[][] | select(.name | test("iPhone"))][0].udid')
+          echo "Using simulator: $DEVICE_ID"
+          echo "$DEVICE_ID" > /tmp/simulator_device_id
+
+          xcrun simctl bootstatus "$DEVICE_ID" -b || xcrun simctl boot "$DEVICE_ID"
+          xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+          xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID"
           # Give the app a moment to finish its first frame before capturing.
           sleep 5
 
       - name: Capture screenshots
         script: |
+          set -e
+          DEVICE_ID=$(cat /tmp/simulator_device_id)
           mkdir -p screenshots
-          xcrun simctl io booted screenshot screenshots/01_launch.png
-          # Add more `sleep` + `xcrun simctl io booted screenshot ...` pairs
-          # here if you want to script taps (via `xcrun simctl ... spawn`)
-          # and capture further screens.
+          xcrun simctl io "$DEVICE_ID" screenshot screenshots/01_launch.png
+          # Add more `sleep` + `xcrun simctl io "$DEVICE_ID" screenshot ...`
+          # pairs here if you want to script taps (via
+          # `xcrun simctl ... spawn`) and capture further screens.
 
     artifacts:
       - screenshots/*.png
