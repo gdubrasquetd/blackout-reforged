@@ -68,6 +68,57 @@ workflows:
       - build/ios/iphonesimulator/*.app
 
   # ---------------------------------------------------------------------
+  # ios-unsigned-ipa (sideload onto a real iPhone with a free Apple ID)
+  # ---------------------------------------------------------------------
+  # No Apple Developer Program membership needed -- this is the iOS
+  # equivalent of sideloading an .apk. It builds an unsigned, device-
+  # architecture .ipa; a free tool on your computer (AltStore or
+  # Sideloadly) signs it with your own free Apple ID at install time and
+  # pushes it to your iPhone over USB/WiFi.
+  #
+  # Trade-off: apps signed with a free Apple ID expire after 7 days and
+  # need re-signing. AltStore automates this (its "AltServer" component
+  # refreshes the app automatically whenever your phone and computer share
+  # a WiFi network) -- Sideloadly requires you to reinstall manually.
+  #
+  # To install once this workflow has produced app-unsigned.ipa:
+  #   1. Install AltStore (altstore.io) or Sideloadly (sideloadly.io) on
+  #      this Windows machine, and the AltStore/companion app on the
+  #      iPhone (guided by their installer).
+  #   2. Connect the iPhone via USB (or same WiFi network for AltStore).
+  #   3. Drag app-unsigned.ipa onto AltStore/Sideloadly, sign in with a
+  #      free Apple ID when prompted, and install.
+  #   4. On the iPhone: Settings -> General -> VPN & Device Management ->
+  #      trust the developer profile for that Apple ID before first launch.
+  ios-unsigned-ipa:
+    name: iOS - Unsigned IPA (sideload via AltStore/Sideloadly)
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.5
+      xcode: latest
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+
+      - name: Run the test suite
+        script: flutter test
+
+      - name: Build for a real device (unsigned)
+        script: flutter build ios --release --no-codesign
+
+      - name: Package as an unsigned .ipa
+        script: |
+          set -e
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r -q app-unsigned.ipa Payload
+
+    artifacts:
+      - build/ios/iphoneos/app-unsigned.ipa
+
+  # ---------------------------------------------------------------------
   # ios-release (signed build for a real device / TestFlight / App Store)
   # ---------------------------------------------------------------------
   # Needs an Apple Developer Program membership (99 USD/year) -- there is
